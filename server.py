@@ -37,8 +37,16 @@ class CodeRequest(BaseModel):
 
 @app.post("/analyze")
 def analyze_endpoint(request: CodeRequest):
-    results = analyze(request.code)  
-    return {"feedback": [r.text for r in results]}
+    static_feedback = analyze_code(request.code)
+    ai_feedback = advise_on_code(request.code)
+    
+    static_feedback_list = [{"type": "static", "message": f["message"]} for f in static_feedback]
+    ai_feedback_list = [{"type": "ai", "message": f["message"]} for f in ai_feedback]
+    
+    return {
+        "static": static_feedback_list,
+        "ai": ai_feedback_list
+    }
 
 if __name__ == "__main__":
     uvicorn.run(app=app, host="127.0.0.1", port=8000)

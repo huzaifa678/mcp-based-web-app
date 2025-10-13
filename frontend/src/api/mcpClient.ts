@@ -20,8 +20,8 @@ export const analyzeCode = async (code: string): Promise<AnalysisResponse> => {
   try {
     const response = await axios.post(`${MCP_SERVER_URL}/analyze`, { code });
 
-    return response.data as AnalysisResponse;
-
+    return response.data;
+    
   } catch (error: any) {
     console.error("MCP Client error:", error);
     return { ai: [{ type: "error", message: "Failed to analyze code" }] };

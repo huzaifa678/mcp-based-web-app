@@ -6,3 +6,8 @@ mcp
 astroid
 openai
 flask
+PyJWT
+sqlalchemy
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1
+python-dotenv

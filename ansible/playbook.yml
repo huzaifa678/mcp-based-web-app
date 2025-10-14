@@ -1,0 +1,28 @@
+---
+- hosts: web
+  become: true
+  tasks:
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Login to ECR
+      shell: |
+        aws ecr get-login-password --region us-east-1 \
+        | docker login --username AWS --password-stdin 533267178572.dkr.ecr.us-east-1.amazonaws.com
+      environment:
+        AWS_ACCESS_KEY_ID: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
+        AWS_SECRET_ACCESS_KEY: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
+
+    - name: Pull and run container
+      shell: |
+        docker pull 533267178572.dkr.ecr.us-east-1.amazonaws.com/mcp-proj-repo:latest
+        docker run -d -p 80:80 533267178572.dkr.ecr.us-east-1.amazonaws.com/mcp-proj-repo:latest

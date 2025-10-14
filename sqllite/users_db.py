@@ -14,3 +14,5 @@ class User(Base):
     hashed_password = Column(String)
     
 Base.metadata.create_all(bind=engine)
+
+

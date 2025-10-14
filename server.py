@@ -1,9 +1,8 @@
-from http.client import HTTPException
 from fastapi.params import Header
 import jwt
 from requests import Session
 import uvicorn
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from mcp.server.fastmcp import FastMCP
 from mcp.types import TextContent
@@ -13,7 +12,7 @@ from tools.advisor import advise_on_code
 from pydantic import BaseModel
 
 from utils.password import hash_password, verify_password
-from utils.token import ALGORITHM, SECRET_KEY, create_access_token, create_refresh_token
+from utils.token import ALGORITHM, SECRET_KEY, create_access_token, create_refresh_token, verify_access_token
 
 mcp = FastMCP("MCP server")
 app = FastAPI()
@@ -110,7 +109,17 @@ class CodeRequest(BaseModel):
     code: str
 
 @app.post("/analyze")
-def analyze_endpoint(request: CodeRequest):
+def analyze_endpoint(request: CodeRequest, http_request: Request):
+    
+    auth_header = http_request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid Authorization header")
+
+    token = auth_header.split(" ")[1]
+    payload = verify_access_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    
     static_feedback = analyze_code(request.code)
     ai_feedback = advise_on_code(request.code)
     

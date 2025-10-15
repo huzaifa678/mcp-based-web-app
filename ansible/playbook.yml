@@ -1,20 +1,29 @@
 ---
-- hosts: web
+- hosts: app
   become: true
+  vars:
+    ecr_repo: "533267178572.dkr.ecr.us-east-1.amazonaws.com/mcp-proj-repo:latest"
+    app_service_name: "mcp-app"
+    react_dir: "/var/www/html"
   tasks:
-    - name: Install Docker
+    - name: Install required packages
       apt:
-        name: docker.io
+        name:
+          - docker.io
+          - apache2
         state: present
         update_cache: yes
 
-    - name: Start Docker service
+    - name: Start Docker and Apache
       service:
-        name: docker
+        name: "{{ item }}"
         state: started
         enabled: yes
+      loop:
+        - docker
+        - apache2
 
-    - name: Login to ECR
+    - name: Login to AWS ECR
       shell: |
         aws ecr get-login-password --region us-east-1 \
         | docker login --username AWS --password-stdin 533267178572.dkr.ecr.us-east-1.amazonaws.com
@@ -22,7 +31,59 @@
         AWS_ACCESS_KEY_ID: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
         AWS_SECRET_ACCESS_KEY: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
 
-    - name: Pull and run container
+    - name: Pull latest Docker image
+      shell: docker pull {{ ecr_repo }}
+
+    - name: Stop running container if exists
       shell: |
-        docker pull 533267178572.dkr.ecr.us-east-1.amazonaws.com/mcp-proj-repo:latest
-        docker run -d -p 80:80 533267178572.dkr.ecr.us-east-1.amazonaws.com/mcp-proj-repo:latest
+        docker ps -q --filter "name={{ app_service_name }}" | grep -q . && docker stop {{ app_service_name }} && docker rm {{ app_service_name }} || true
+
+    - name: Run Docker container
+      shell: |
+        docker run -d --name {{ app_service_name }} \
+        -p 8000:80 \
+        {{ ecr_repo }}
+
+    - name: Create systemd service for app container
+      copy:
+        dest: /etc/systemd/system/{{ app_service_name }}.service
+        content: |
+          [Unit]
+          Description=MCP App Container Service
+          After=docker.service
+          Requires=docker.service
+
+          [Service]
+          Restart=always
+          ExecStart=/usr/bin/docker start -a {{ app_service_name }}
+          ExecStop=/usr/bin/docker stop -t 10 {{ app_service_name }}
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Enable and start systemd service
+      shell: |
+        systemctl daemon-reload
+        systemctl enable {{ app_service_name }}
+        systemctl start {{ app_service_name }}
+
+    - name: Build React frontend
+      shell: |
+        cd ./frontend
+        npm run build
+
+    - name: Deploy React frontend (Apache)
+      copy:
+        src: ./frontend/build/
+        dest: "{{ react_dir }}/"
+        owner: www-data
+        group: www-data
+        mode: '0755'
+      notify:
+        - Restart Apache
+
+  handlers:
+    - name: Restart Apache
+      service:
+        name: apache2
+        state: restarted

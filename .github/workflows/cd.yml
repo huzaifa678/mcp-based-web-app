@@ -36,8 +36,7 @@ jobs:
       - name: Terraform Plan
         run: |
           terraform plan \
-            -var="key_name=my-key" \
-            -out=tfplan
+          -out=tfplan
         working-directory: ./terraform
 
       - name: Terraform Apply

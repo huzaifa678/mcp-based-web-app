@@ -129,5 +129,5 @@ jobs:
         env:
           ANSIBLE_HOST_KEY_CHECKING: "False"
         run: |
-          ansible-playbook -i inventory playbook.yml --private-key ~/.ssh/private_key.pem -u ubuntu
+          ansible-playbook -i inventory playbook.yml --private-key ~/.ssh/private_key.pem -u ubuntu -vvv
         working-directory: ./ansible

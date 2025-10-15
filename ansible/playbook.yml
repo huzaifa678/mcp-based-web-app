@@ -23,6 +23,20 @@
         - docker
         - apache2
 
+    - name: Install AWS CLI v2
+      apt:
+        name: unzip, curl
+        state: present
+        update_cache: yes
+
+    - name: Download and install AWS CLI v2
+      shell: |
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
+        unzip /tmp/awscliv2.zip -d /tmp
+        sudo /tmp/aws/install
+      args:
+        creates: /usr/local/bin/aws
+
     - name: Login to AWS ECR
       shell: |
         aws ecr get-login-password --region us-east-1 \

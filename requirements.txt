@@ -1,11 +1,9 @@
 fastapi
 uvicorn
 transformers
-torch
 mcp
 astroid
 openai
-flask
 PyJWT
 sqlalchemy
 passlib[bcrypt]==1.7.4

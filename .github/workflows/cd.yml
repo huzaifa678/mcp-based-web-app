@@ -107,3 +107,4 @@ jobs:
       - name: Run Ansible Playbook
         run: |
           ansible-playbook -i inventory playbook.yml --private-key private_key.pem -u ubuntu
+        working-directory: ./ansible

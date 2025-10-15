@@ -5,6 +5,7 @@
     ecr_repo: "533267178572.dkr.ecr.us-east-1.amazonaws.com/mcp-proj-repo:latest"
     app_service_name: "mcp-app"
     react_dir: "/var/www/html"
+    repo_url: "https://github.com/huzaifa678/mcp-based-web-app.git"
 
   tasks:
     - name: Install required packages
@@ -14,6 +15,8 @@
           - apache2
           - unzip
           - curl
+          - npm
+          - git
         state: present
         update_cache: yes
 
@@ -71,15 +74,26 @@
         systemctl enable {{ app_service_name }}
         systemctl start {{ app_service_name }}
 
-    - name: Copy React frontend build
+    - name: Clone repo on EC2
+      git:
+        repo: "{{ repo_url }}"
+        dest: /home/ubuntu/app
+        version: main
+
+    - name: Build React frontend on EC2
+      shell: |
+        cd /home/ubuntu/app/frontend
+        npm install
+        npm run build
+
+    - name: Deploy React frontend
       copy:
-        src: "{{ playbook_dir }}/../frontend/build/"
+        remote_src: yes
+        src: /home/ubuntu/app/frontend/build/
         dest: "{{ react_dir }}/"
         owner: www-data
         group: www-data
         mode: '0755'
-      notify:
-        - Restart Apache
 
   handlers:
     - name: Restart Apache

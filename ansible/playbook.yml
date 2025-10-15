@@ -80,6 +80,13 @@
         dest: /home/ubuntu/app
         version: main
 
+    - name: Install Node.js
+      shell: |
+        curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+        apt-get install -y nodejs
+      args:
+        creates: /usr/bin/node
+
     - name: Build React frontend on EC2
       shell: |
         cd /home/ubuntu/app/frontend

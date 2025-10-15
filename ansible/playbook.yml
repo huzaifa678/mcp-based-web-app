@@ -85,6 +85,8 @@
         cd /home/ubuntu/app/frontend
         npm install
         npm run build
+      async: 1800
+      poll: 10 
 
     - name: Deploy React frontend
       copy:

@@ -5,12 +5,14 @@
     ecr_repo: "533267178572.dkr.ecr.us-east-1.amazonaws.com/mcp-proj-repo:latest"
     app_service_name: "mcp-app"
     react_dir: "/var/www/html"
+
   tasks:
     - name: Install required packages
       apt:
         name:
           - docker.io
           - apache2
+          - awscli
         state: present
         update_cache: yes
 
@@ -22,35 +24,14 @@
       loop:
         - docker
         - apache2
-
-    - name: Install AWS CLI v2
-      apt:
-        name: unzip, curl
-        state: present
-        update_cache: yes
-
-    - name: Download and install AWS CLI v2
-      shell: |
-        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
-        unzip /tmp/awscliv2.zip -d /tmp
-        sudo /tmp/aws/install
-      args:
-        creates: /usr/local/bin/aws
-
-    - name: Login to AWS ECR
-      shell: |
-        aws ecr get-login-password --region us-east-1 \
-        | docker login --username AWS --password-stdin 533267178572.dkr.ecr.us-east-1.amazonaws.com
-      environment:
-        AWS_ACCESS_KEY_ID: "{{ lookup('env', 'AWS_ACCESS_KEY_ID') }}"
-        AWS_SECRET_ACCESS_KEY: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY') }}"
-
-    - name: Pull latest Docker image
+        
+    - name: Pull latest Docker image from ECR
       shell: docker pull {{ ecr_repo }}
 
-    - name: Stop running container if exists
+    - name: Stop running container if it exists
       shell: |
-        docker ps -q --filter "name={{ app_service_name }}" | grep -q . && docker stop {{ app_service_name }} && docker rm {{ app_service_name }} || true
+        docker ps -q --filter "name={{ app_service_name }}" | grep -q . && \
+        docker stop {{ app_service_name }} && docker rm {{ app_service_name }} || true
 
     - name: Run Docker container
       shell: |
@@ -81,12 +62,7 @@
         systemctl enable {{ app_service_name }}
         systemctl start {{ app_service_name }}
 
-    - name: Build React frontend
-      shell: |
-        cd ./frontend
-        npm run build
-
-    - name: Deploy React frontend (Apache)
+    - name: Copy React frontend build
       copy:
         src: ./frontend/build/
         dest: "{{ react_dir }}/"

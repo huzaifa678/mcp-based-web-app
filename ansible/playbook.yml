@@ -34,13 +34,13 @@
         - docker
         - apache2
 
+    - name: Login to AWS ECR
+      shell: |
+        aws ecr get-login-password --region us-east-1 | \
+        docker login --username AWS --password-stdin 533267178572.dkr.ecr.us-east-1.amazonaws.com
+
     - name: Pull latest Docker image from ECR
       shell: docker pull {{ ecr_repo }}
-
-    - name: Stop running container if it exists
-      shell: |
-        docker ps -q --filter "name={{ app_service_name }}" | grep -q . && \
-        docker stop {{ app_service_name }} && docker rm {{ app_service_name }} || true
 
     - name: Run Docker container
       shell: |

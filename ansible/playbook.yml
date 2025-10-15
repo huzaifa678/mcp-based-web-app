@@ -73,7 +73,7 @@
 
     - name: Copy React frontend build
       copy:
-        src: ./frontend/build/
+        src: "{{ playbook_dir }}/../frontend/build/"
         dest: "{{ react_dir }}/"
         owner: www-data
         group: www-data

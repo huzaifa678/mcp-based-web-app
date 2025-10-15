@@ -91,6 +91,6 @@ resource "aws_instance" "app" {
   associate_public_ip_address = true
 
   tags = {
-    Name = "terraform-ec2"
+    Name = "app"
   }
 }

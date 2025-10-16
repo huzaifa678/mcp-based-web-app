@@ -74,6 +74,40 @@
         systemctl enable {{ app_service_name }}
         systemctl start {{ app_service_name }}
 
+    - name: Enable Apache proxy modules
+      apache2_module:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - proxy
+        - proxy_http
+        - rewrite
+
+    - name: Create Apache virtual host for app
+      copy:
+        dest: /etc/apache2/sites-available/mcp-app.conf
+        content: |
+          <VirtualHost *:80>
+              ServerName {{ ansible_host }}
+              
+              ProxyPreserveHost On
+              ProxyPass / http://localhost:8000/
+              ProxyPassReverse / http://localhost:8000/
+
+              ErrorLog ${APACHE_LOG_DIR}/mcp-app-error.log
+              CustomLog ${APACHE_LOG_DIR}/mcp-app-access.log combined
+          </VirtualHost>
+
+    - name: Enable app site
+      shell: a2ensite mcp-app.conf
+      args:
+        warn: false
+
+    - name: Restart Apache to apply reverse proxy
+      service:
+        name: apache2
+        state: restarted
+
     - name: Clone repo on EC2
       git:
         repo: "{{ repo_url }}"
@@ -105,7 +139,6 @@
           swapon /swapfile
           echo '/swapfile none swap sw 0 0' >> /etc/fstab
         fi
-
 
     - name: Build React frontend on EC2
       shell: |

@@ -95,6 +95,20 @@
         owner: ubuntu
         group: ubuntu
 
+    - name: Add swap space
+      become: true
+      shell: |
+        if [ ! -f /swapfile ]; then
+          fallocate -l 2G /swapfile
+          chmod 600 /swapfile
+          mkswap /swapfile
+          swapon /swapfile
+          echo '/swapfile none swap sw 0 0' >> /etc/fstab
+        fi
+      args:
+        warn: false
+
+
     - name: Build React frontend on EC2
       shell: |
         cd /home/ubuntu/app/frontend

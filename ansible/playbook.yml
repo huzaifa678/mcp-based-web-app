@@ -116,24 +116,23 @@
                 RewriteRule ^ /index.html [L]
               </IfModule>
           </VirtualHost>
+      notify: Restart Apache
 
     - name: Disable default Apache site
       command: a2dissite 000-default.conf
       args:
         removes: /etc/apache2/sites-enabled/000-default.conf
+      notify: Restart Apache
 
     - name: Enable app site
       shell: a2ensite mcp-app.conf
+      notify: Restart Apache
 
     - name: Enable app site if not already enabled
       command: a2ensite mcp-app.conf
       args:
         creates: /etc/apache2/sites-enabled/mcp-app.conf
-
-    - name: Restart Apache to apply reverse proxy
-      service:
-        name: apache2
-        state: restarted
+      notify: Restart Apache
 
     - name: Clone repo on EC2
       git:
@@ -175,6 +174,7 @@
         owner: www-data
         group: www-data
         mode: '0755'
+      notify: Restart Apache
 
   handlers:
     - name: Restart Apache

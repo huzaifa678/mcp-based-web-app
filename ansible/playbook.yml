@@ -89,6 +89,8 @@
         content: |
           <VirtualHost *:80>
               ServerName {{ ansible_host }}
+
+              DocumentRoot /var/www/html
               
               ProxyPreserveHost On
               ProxyPass / http://localhost:8000/

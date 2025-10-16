@@ -98,6 +98,21 @@
 
               ErrorLog ${APACHE_LOG_DIR}/mcp-app-error.log
               CustomLog ${APACHE_LOG_DIR}/mcp-app-access.log combined
+
+              <Directory /var/www/html>
+                Options Indexes FollowSymLinks
+                AllowOverride All
+                Require all granted
+              </Directory>
+
+              <IfModule mod_rewrite.c>
+                RewriteEngine On
+                RewriteBase /
+
+                RewriteCond %{REQUEST_FILENAME} !-f
+                RewriteCond %{REQUEST_FILENAME} !-d
+                RewriteRule ^ index.html [L]
+              </IfModule>
           </VirtualHost>
 
     - name: Enable app site

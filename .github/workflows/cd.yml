@@ -12,6 +12,12 @@ jobs:
   terraform:
     name: Terraform Apply
     runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      REFRESH_TOKEN_EXPIRE_DAYS: 7
     outputs:
       EC2_PUBLIC_IP: ${{ steps.tf-output.outputs.EC2_PUBLIC_IP }}
       EC2_PRIVATE_KEY: ${{ steps.tf-output.outputs.EC2_PRIVATE_KEY }}

@@ -1,7 +1,17 @@
 #!/usr/bin/env bash
-set -a
-source "../.env"
-set +a
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if [ -f "$DIR/../.env" ]; then
+  set -a
+  source "$DIR/../.env"
+  set +a
+fi
+
+OPENAI_API_KEY="${OPENAI_API_KEY:-}"
+SECRET_KEY="${SECRET_KEY:-}"
+ALGORITHM="${ALGORITHM:-HS256}"
+ACCESS_TOKEN_EXPIRE_MINUTES="${ACCESS_TOKEN_EXPIRE_MINUTES:-30}"
+REFRESH_TOKEN_EXPIRE_DAYS="${REFRESH_TOKEN_EXPIRE_DAYS:-7}"
 
 jq -n \
   --arg OPENAI_API_KEY "$OPENAI_API_KEY" \

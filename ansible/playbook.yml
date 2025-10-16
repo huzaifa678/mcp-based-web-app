@@ -108,14 +108,27 @@
               <IfModule mod_rewrite.c>
                 RewriteEngine On
 
+                RewriteCond %{REQUEST_URI} !^/api/
+                RewriteCond %{REQUEST_URI} !^/static/
                 RewriteCond %{REQUEST_FILENAME} !-f
                 RewriteCond %{REQUEST_FILENAME} !-d
-                RewriteRule ^ index.html [L]
+
+                RewriteRule ^ /index.html [L]
               </IfModule>
           </VirtualHost>
 
+    - name: Disable default Apache site
+      command: a2dissite 000-default.conf
+      args:
+        removes: /etc/apache2/sites-enabled/000-default.conf
+
     - name: Enable app site
       shell: a2ensite mcp-app.conf
+
+    - name: Enable app site if not already enabled
+      command: a2ensite mcp-app.conf
+      args:
+        creates: /etc/apache2/sites-enabled/mcp-app.conf
 
     - name: Restart Apache to apply reverse proxy
       service:
@@ -134,14 +147,6 @@
         apt-get install -y nodejs
       args:
         creates: /usr/bin/node
-
-    - name: Ensure frontend folder owned by ubuntu
-      file:
-        path: /home/ubuntu/app/frontend
-        state: directory
-        recurse: yes
-        owner: ubuntu
-        group: ubuntu
 
     - name: Add swap space
       become: true

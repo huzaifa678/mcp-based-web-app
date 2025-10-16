@@ -13,7 +13,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const API_URL = "http://127.0.0.1:8000"; // MCP backend URL
+const API_URL = "/api"; // MCP backend URL
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<string | null>(null);

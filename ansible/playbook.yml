@@ -87,6 +87,14 @@
       args:
         creates: /usr/bin/node
 
+    - name: Ensure frontend folder owned by ubuntu
+      file:
+        path: /home/ubuntu/app/frontend
+        state: directory
+        recurse: yes
+        owner: ubuntu
+        group: ubuntu
+
     - name: Build React frontend on EC2
       shell: |
         cd /home/ubuntu/app/frontend

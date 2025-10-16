@@ -102,8 +102,6 @@
 
     - name: Enable app site
       shell: a2ensite mcp-app.conf
-      args:
-        warn: false
 
     - name: Restart Apache to apply reverse proxy
       service:

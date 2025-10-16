@@ -105,8 +105,6 @@
           swapon /swapfile
           echo '/swapfile none swap sw 0 0' >> /etc/fstab
         fi
-      args:
-        warn: false
 
 
     - name: Build React frontend on EC2

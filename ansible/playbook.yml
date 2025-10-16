@@ -93,8 +93,8 @@
               DocumentRoot /var/www/html
               
               ProxyPreserveHost On
-              ProxyPass /api http://localhost:8000/
-              ProxyPassReverse /api http://localhost:8000/
+              ProxyPass /api/ http://localhost:8000/
+              ProxyPassReverse /api/ http://localhost:8000/
 
               ErrorLog ${APACHE_LOG_DIR}/mcp-app-error.log
               CustomLog ${APACHE_LOG_DIR}/mcp-app-access.log combined

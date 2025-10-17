@@ -16,3 +16,15 @@ variable "ami_id" {
   type        = string
   default     = "ami-0e8459476fed2e23b"
 }
+
+variable "domain_name" {
+  description = "Domain name for Route 53"
+  type        = string
+  default     = "codeadvisor.org"
+}
+
+variable "subdomain_name" {
+  description = "Subdomain name for the application"
+  type        = string
+  default     = "www.codeadvisor.org"
+}

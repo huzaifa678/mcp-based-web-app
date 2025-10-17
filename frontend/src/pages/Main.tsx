@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { analyzeCode } from "../api/mcpClient";
+import { useAuth } from "../context/AuthContext";
 
 export default function CodeUploader() {
+  const { accessToken } = useAuth();
   const [code, setCode] = useState("");
   const [feedback, setFeedback] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -38,7 +40,7 @@ export default function CodeUploader() {
     setLoading(true);
     setFeedback(null);
     try {
-      const res = await analyzeCode(code);
+      const res = await analyzeCode(code, accessToken);
       setFeedback(res);
     } finally {
       setLoading(false);

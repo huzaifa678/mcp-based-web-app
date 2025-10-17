@@ -16,9 +16,18 @@ export interface AnalysisResponse {
  * Sends code to the MCP server analyze tool and returns feedback.
  * @param code - Python code string
  */
-export const analyzeCode = async (code: string): Promise<AnalysisResponse> => {
+export const analyzeCode = async (code: string, accessToken: string | null): Promise<AnalysisResponse> => {
+
+  if (!accessToken) {
+    throw new Error("No access token provided");
+  }
+
   try {
-    const response = await axios.post(`${MCP_SERVER_URL}/analyze`, { code });
+    const response = await axios.post(`${MCP_SERVER_URL}/analyze`, { code }, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
 
     return response.data;
     

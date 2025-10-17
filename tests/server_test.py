@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqllite.users_db import Base, User
 from server import app, get_db
-from utils.token import SECRET_KEY, ALGORITHM
+from utils.jwt_token import SECRET_KEY, ALGORITHM
 import jwt
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test_integration.db"

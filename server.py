@@ -12,7 +12,7 @@ from tools.advisor import advise_on_code
 from pydantic import BaseModel
 
 from utils.password import hash_password, verify_password
-from utils.token import ALGORITHM, SECRET_KEY, create_access_token, create_refresh_token, verify_access_token
+from utils.jwt_token import ALGORITHM, SECRET_KEY, create_access_token, create_refresh_token, verify_access_token
 
 mcp = FastMCP("MCP server")
 app = FastAPI()

@@ -19,24 +19,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<string | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [refreshToken, setRefreshToken] = useState<string | null>(() =>
+  const [refreshTokenValue, setRefreshTokenValue] = useState<string | null>(() =>
     localStorage.getItem("refreshToken")
   );
 
   useEffect(() => {
   const init = async () => {
-    if (refreshToken) {
+    if (refreshTokenValue) {
       await refreshTokenCall();
     }
     setLoading(false);
     };
     init();
-  }, [refreshToken]);
+  }, [refreshTokenValue]);
 
   const login = async (username: string, password: string) => {
     const res = await axios.post(`${API_URL}/login`, { username, password });
     setAccessToken(res.data.access_token);
-    setRefreshToken(res.data.refresh_token);
+    setRefreshTokenValue(res.data.refresh_token);
     setUser(username);
     localStorage.setItem("refreshToken", res.data.refresh_token);
   };
@@ -48,16 +48,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     setUser(null);
     setAccessToken(null);
-    setRefreshToken(null);
+    setRefreshTokenValue(null);
     localStorage.removeItem("refreshToken");
   };
 
   const refreshTokenCall = async () => {
-    if (!refreshToken) return;
+    if (!refreshTokenValue) return;
     try {
-      const res = await axios.post(`${API_URL}/renew`, { refresh_token: refreshToken });
+      const res = await axios.post(`${API_URL}/renew`, { refresh_token: refreshTokenValue });
       setAccessToken(res.data.access_token);
-      setRefreshToken(res.data.refresh_token);
+      setRefreshTokenValue(res.data.refresh_token);
       localStorage.setItem("refreshToken", res.data.refresh_token);
     } catch (err) {
       logout();

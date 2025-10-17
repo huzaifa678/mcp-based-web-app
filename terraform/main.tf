@@ -131,6 +131,12 @@ resource "aws_instance" "app" {
   vpc_security_group_ids      = [aws_security_group.main.id]
   associate_public_ip_address = true
 
+  root_block_device {
+    volume_size = 20    
+    volume_type = "gp3"
+    delete_on_termination = true
+  }
+
   tags = {
     Name = "app"
   }

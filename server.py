@@ -96,10 +96,10 @@ def analyze(code: str, authorization: str = Header(...)) -> list[TextContent]:
     except jwt.PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
     static_feedback = analyze_code(code)
-    ai_feedback = advise_on_code(code)
+    # ai_feedback = advise_on_code(code)
 
     combined = "\n".join([
-        f"{item['message']}" for item in static_feedback + ai_feedback
+        f"{item['message']}" for item in static_feedback 
     ])
 
     return [TextContent(type="text", text=combined)]
@@ -119,14 +119,14 @@ def analyze_endpoint(request: CodeRequest, http_request: Request):
     if not payload:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
     
-    static_feedback = analyze_code(request.code)
-    ai_feedback = advise_on_code(request.code)
+    # static_feedback = analyze_code(request.code)
+    ai_feedback = advise_on_code(request.code, token)
     
-    static_feedback_list = [{"type": "static", "message": f["message"]} for f in static_feedback]
+    # static_feedback_list = [{"type": "static", "message": f["message"]} for f in static_feedback]
     ai_feedback_list = [{"type": "ai", "message": f["message"]} for f in ai_feedback]
     
     return {
-        "static": static_feedback_list,
+        # "static": static_feedback_list,
         "ai": ai_feedback_list
     }
 

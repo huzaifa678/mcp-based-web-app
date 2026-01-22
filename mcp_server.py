@@ -17,7 +17,7 @@ def analyze(code: str, authorization: str = Header(...)) -> list[TextContent]:
     """
     token = authorization.replace("Bearer ", "")
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     except jwt.PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
     static_feedback = analyze_code(code)

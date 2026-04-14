@@ -8,7 +8,6 @@ from sqlalchemy.orm import sessionmaker
 from sqllite.users_db import Base, User
 from server import app, get_db
 from utils.jwt_token import SECRET_KEY, ALGORITHM
-import jwt
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test_integration.db"
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})

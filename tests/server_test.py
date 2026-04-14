@@ -5,7 +5,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqllite.users_db import Base, User
+from sqllite.users_db import Base
 from server import app, get_db
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test_integration.db"

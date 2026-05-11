@@ -23,7 +23,7 @@ jobs:
       EC2_PRIVATE_KEY: ${{ steps.tf-output.outputs.EC2_PRIVATE_KEY }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4
@@ -68,7 +68,7 @@ jobs:
     needs: terraform
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v6
@@ -106,7 +106,7 @@ jobs:
       EC2_PRIVATE_KEY: ${{ needs.terraform.outputs.EC2_PRIVATE_KEY }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup SSH key
         run: |
